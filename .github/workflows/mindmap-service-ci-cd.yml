@@ -66,7 +66,7 @@ jobs:
         chmod 600 ~/.ssh/known_hosts
         
         # Создаем директорию на сервере
-        ssh -i ~/.ssh/id_deploy -p "${OVH_PORT:-22}" "${OVH_USER}@${OVH_HOST}" "mkdir -p ${REMOTE_DIR}"
+        ssh -i ~/.ssh/id_deploy -p "${OVH_PORT:-22}" "${OVH_USER}@${OVH_HOST}" "sudo mkdir -p ${REMOTE_DIR} && sudo chown -R \${USER}:\${USER} ${REMOTE_DIR}"
         
         # Копируем файлы
         rsync -avz --delete --exclude='.user.ini' \
@@ -75,12 +75,9 @@ jobs:
         rsync -avz --exclude='.user.ini' \
           -e "ssh -i ~/.ssh/id_deploy -p ${OVH_PORT:-22}" \
           package.json "${OVH_USER}@${OVH_HOST}:${REMOTE_DIR}/"
-        rsync -avz --exclude='.user.ini' \
-          -e "ssh -i ~/.ssh/id_deploy -p ${OVH_PORT:-22}" \
-          node_modules/ "${OVH_USER}@${OVH_HOST}:${REMOTE_DIR}/node_modules/"
           
         # Устанавливаем зависимости на сервере и перезапускаем сервис
         ssh -i ~/.ssh/id_deploy -p "${OVH_PORT:-22}" "${OVH_USER}@${OVH_HOST}" "
           cd ${REMOTE_DIR} && 
-          npm ci --production && 
-          pm2 restart mindmap-service || pm2 start dist/main.js --name mindmap-service"
+          npm install --production && 
+          pm2 restart mindmap-service -f || pm2 start dist/main.js --name mindmap-service"
