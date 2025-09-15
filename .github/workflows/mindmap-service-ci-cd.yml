@@ -42,7 +42,6 @@ jobs:
         cp -r dist deployment/
         cp -r node_modules deployment/
         cp package.json deployment/
-        cp .env deployment/
         tar -czf mindmap-service-bundle.tgz -C deployment .
       
     - name: Deploy to server
