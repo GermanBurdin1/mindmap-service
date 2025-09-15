@@ -9,10 +9,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MindmapModule } from './mindmap/mindmap.module';
 import { MindmapNode } from './mindmap/entities/node.entity';
+import { join } from 'path';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ 
+      isGlobal: true,
+      envFilePath: join(__dirname, '..', '.env'),
+    }),
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
