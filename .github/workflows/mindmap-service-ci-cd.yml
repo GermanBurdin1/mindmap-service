@@ -62,7 +62,7 @@ jobs:
         # Создаем директорию на сервере
         ssh -i ~/.ssh/id_deploy -p "${OVH_PORT:-22}" "${OVH_USER}@${OVH_HOST}" "sudo mkdir -p ${REMOTE_DIR} && sudo chown -R \${USER}:\${USER} ${REMOTE_DIR}"
         
-        # Копируем архив на сервер
+        # copie l'archive sur le serveur
         scp -i ~/.ssh/id_deploy -P "${OVH_PORT:-22}" mindmap-service-bundle.tgz "${OVH_USER}@${OVH_HOST}:${REMOTE_DIR}/"
         
         # Распаковываем и перезапускаем сервис
