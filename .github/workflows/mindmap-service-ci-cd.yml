@@ -50,7 +50,7 @@ jobs:
         OVH_HOST: ${{ secrets.OVH_HOST }}
         OVH_USER: ${{ secrets.OVH_USER }}
         SSH_KEY: ${{ secrets.OVH_SSH_KEY }}
-        REMOTE_DIR: /www/wwwroot/mindmap-service
+        REMOTE_DIR: /www/wwwroot/services/mindmap-service
       run: |
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
