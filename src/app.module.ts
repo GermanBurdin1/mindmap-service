@@ -10,6 +10,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MindmapModule } from './mindmap/mindmap.module';
 import { MindmapNode } from './mindmap/entities/node.entity';
 import { join } from 'path';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtStrategy } from './auth/jwt.strategy';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -30,7 +35,21 @@ import { join } from 'path';
       synchronize: false,
     }),
 
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      verifyOptions: {
+        algorithms: ['HS256'],
+        issuer: process.env.JWT_ISS,
+      },
+    }),
+
     MindmapModule,
+  ],
+  providers: [
+    JwtStrategy,
+    // Делаем guard глобальным для сервиса:
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
   ],
 })
 export class AppModule {}

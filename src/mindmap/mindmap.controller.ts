@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Req } from '@nestjs/common';
 import { MindmapService } from './mindmap.service';
 import { CreateNodeDto } from './dto/create-node.dto';
 
@@ -7,47 +7,54 @@ export class MindmapController {
   constructor(private readonly mindmapService: MindmapService) {}
 
   @Post()
-  create(@Body() dto: CreateNodeDto) {
-    return this.mindmapService.create(dto);
+  create(@Body() dto: CreateNodeDto, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.create(dto, userId);
   }
 
   @Post('bulk-save')
-  bulkSave(@Body() body: { nodes: Partial<CreateNodeDto>[] }) {
-    return this.mindmapService.bulkSave(body.nodes);
+  bulkSave(@Body() body: { nodes: Partial<CreateNodeDto>[] }, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.bulkSave(body.nodes, userId);
   }
 
   @Get()
-  findAll() {
-    return this.mindmapService.findAll();
+  findAll(@Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.findAll(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.mindmapService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.findOne(id, userId);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: any) {
+  update(@Param('id') id: string, @Body() dto: any, @Req() req: any) {
+    const userId = req.user?.sub;
     if ('type' in dto && 'content' in dto) {
-      return this.mindmapService.updateContent(id, dto);
+      return this.mindmapService.updateContent(id, dto, userId);
     }
     if ('title' in dto) {
-      return this.mindmapService.updateTitle(id, dto.title);
+      return this.mindmapService.updateTitle(id, dto.title, userId);
     }
     if ('expanded' in dto) {
-      return this.mindmapService.updateExpanded(id, dto.expanded);
+      return this.mindmapService.updateExpanded(id, dto.expanded, userId);
     }
     return { message: 'Неверный формат запроса' };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.mindmapService.delete(id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.delete(id, userId);
   }
 
 	@Post('save-positions')
-savePositions(@Body() body: { nodes: { id: string; x: number; y: number }[] }) {
-  return this.mindmapService.savePositions(body.nodes);
+savePositions(@Body() body: { nodes: { id: string; x: number; y: number }[] }, @Req() req: any) {
+  const userId = req.user?.sub;
+  return this.mindmapService.savePositions(body.nodes, userId);
 }
 
 }

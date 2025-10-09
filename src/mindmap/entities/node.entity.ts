@@ -32,9 +32,11 @@ export class MindmapNode {
 	@Column({ type: 'float', nullable: true })
 x!: number;
 
-@Column({ type: 'float', nullable: true })
+	@Column({ type: 'float', nullable: true })
 y!: number;
 
+	@Column({ type: 'uuid' })
+	userId!: string;
 
 }
 
