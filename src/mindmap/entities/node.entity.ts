@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Mindmap } from './mindmap.entity';
 
 @Entity()
 export class MindmapNode {
@@ -38,5 +39,10 @@ y!: number;
 	@Column({ type: 'uuid' })
 	userId!: string;
 
-}
+	@Column({ type: 'uuid', nullable: true })
+	mindmapId!: string | null;
 
+	@ManyToOne(() => Mindmap, (mindmap) => mindmap.nodes, { onDelete: 'CASCADE' })
+	mindmap!: Mindmap;
+
+}

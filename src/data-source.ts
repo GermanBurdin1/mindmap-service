@@ -2,6 +2,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { MindmapNode } from './mindmap/entities/node.entity';
+import { Mindmap } from './mindmap/entities/mindmap.entity';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // загружаем .env
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   username: 'postgres',
   password: 'postgre',
   database: 'mindmap_db',
-  entities: [MindmapNode],
+  entities: [Mindmap, MindmapNode],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });
