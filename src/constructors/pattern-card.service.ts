@@ -32,7 +32,7 @@ export class PatternCardService {
       return null;
     }
 
-    return this.patternCardRepo.findOne({ where: { id }, relations: ['constructor'] });
+    return this.patternCardRepo.findOne({ where: { id }, relations: ['constructorRef'] });
   }
 
   async update(id: string, dto: Partial<CreatePatternCardDto>, userId: string): Promise<PatternCard | null> {

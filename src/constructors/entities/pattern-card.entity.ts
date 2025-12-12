@@ -30,7 +30,7 @@ export class PatternCard {
 
   @OneToOne(() => Constructor, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'id' })
-  constructor!: Constructor;
+  constructorRef!: Constructor;
 
   @Column({ type: 'text' })
   pattern!: string; // Шаблон с плейсхолдерами, например: "Je voudrais [VERB] [OBJECT]"

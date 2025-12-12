@@ -42,7 +42,7 @@ export class Flowchart {
 
   @OneToOne(() => Constructor, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'id' })
-  constructor!: Constructor;
+  constructorRef!: Constructor;
 
   @Column({ type: 'jsonb' })
   nodes!: FlowchartNode[]; // Узлы схемы

@@ -44,7 +44,7 @@ export class ConstructorsService {
 
   async delete(id: string, userId: string): Promise<boolean> {
     const result = await this.constructorRepo.delete({ id, userId });
-    return result.affected !== undefined && result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 
   async findByCourse(courseId: number, userId: string): Promise<Constructor[]> {

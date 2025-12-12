@@ -32,7 +32,7 @@ export class FlowchartService {
       return null;
     }
 
-    return this.flowchartRepo.findOne({ where: { id }, relations: ['constructor'] });
+    return this.flowchartRepo.findOne({ where: { id }, relations: ['constructorRef'] });
   }
 
   async update(id: string, dto: Partial<CreateFlowchartDto>, userId: string): Promise<Flowchart | null> {
@@ -104,7 +104,7 @@ export class FlowchartService {
 
   async getResult(id: string, path: { nodeId: string; choice?: string }[], userId: string) {
     const traversal = await this.traverse(id, path, userId);
-    if (!traversal || traversal.error) {
+    if (!traversal || traversal.error || !traversal.path) {
       return traversal;
     }
 

@@ -35,6 +35,8 @@ export interface DrillGridSettings {
   showHints?: boolean;
 }
 
+export type DrillGridPurpose = 'info' | 'homework';
+
 @Entity('drill_grids')
 export class DrillGrid {
   @PrimaryColumn('uuid')
@@ -42,7 +44,7 @@ export class DrillGrid {
 
   @OneToOne(() => Constructor, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'id' })
-  constructor!: Constructor;
+  constructorRef!: Constructor;
 
   @Column({ type: 'jsonb' })
   rows!: DrillGridRow[];
@@ -55,5 +57,14 @@ export class DrillGrid {
 
   @Column({ type: 'jsonb', nullable: true })
   settings!: DrillGridSettings | null;
+
+  @Column({ type: 'varchar', length: 20, nullable: true, default: 'info' })
+  purpose!: DrillGridPurpose | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  studentUserId!: string | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  originalId!: string | null;
 }
 

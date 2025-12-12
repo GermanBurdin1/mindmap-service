@@ -20,9 +20,17 @@ export class DrillGridService {
       return null;
     }
 
+    // Устанавливаем purpose по умолчанию, если не указан
+    const purpose = dto.purpose || 'info';
+    
+    // Для homework drill-grids устанавливаем studentUserId
+    const studentUserId = purpose === 'homework' ? (dto.studentUserId || userId) : null;
+
     const drillGrid = this.drillGridRepo.create({
       id: constructorId,
       ...dto,
+      purpose,
+      studentUserId,
     });
     return this.drillGridRepo.save(drillGrid);
   }
@@ -34,13 +42,93 @@ export class DrillGridService {
       return null;
     }
 
-    return this.drillGridRepo.findOne({ where: { id }, relations: ['constructor'] });
+    const drillGrid = await this.drillGridRepo.findOne({ where: { id }, relations: ['constructor'] });
+    
+    // Если это homework drill-grid, проверяем что студент имеет доступ
+    if (drillGrid && drillGrid.purpose === 'homework' && drillGrid.studentUserId !== userId) {
+      return null;
+    }
+
+    return drillGrid;
+  }
+
+  /**
+   * Найти все homework drill-grids для студента
+   */
+  async findHomeworkByStudent(studentUserId: string): Promise<DrillGrid[]> {
+    return this.drillGridRepo.find({
+      where: {
+        purpose: 'homework',
+        studentUserId: studentUserId,
+      },
+      relations: ['constructorRef'],
+      order: { id: 'DESC' },
+    });
+  }
+
+  /**
+   * Найти все info drill-grids (шаблоны от преподавателей)
+   * Доступны всем для просмотра
+   */
+  async findInfoTemplates(): Promise<DrillGrid[]> {
+    return this.drillGridRepo.find({
+      where: {
+        purpose: 'info',
+      },
+      relations: ['constructorRef'],
+      order: { id: 'DESC' },
+    });
+  }
+
+  /**
+   * Создать homework drill-grid для студента на основе шаблона
+   */
+  async createHomeworkFromTemplate(
+    templateId: string,
+    studentUserId: string,
+    constructorId: string,
+  ): Promise<DrillGrid | null> {
+    // Получаем шаблон
+    const template = await this.drillGridRepo.findOne({ where: { id: templateId } });
+    if (!template || template.purpose !== 'info') {
+      return null;
+    }
+
+    // Проверяем, что конструктор существует и принадлежит студенту
+    const constructor = await this.constructorsService.findOne(constructorId, studentUserId);
+    if (!constructor || constructor.type !== 'drill_grid') {
+      return null;
+    }
+
+    // Создаем homework drill-grid с пустыми ячейками
+    const homeworkGrid = this.drillGridRepo.create({
+      id: constructorId,
+      rows: template.rows,
+      columns: template.columns,
+      cells: [], // Пустые ячейки для заполнения студентом
+      settings: template.settings,
+      purpose: 'homework',
+      studentUserId: studentUserId,
+      originalId: template.id,
+    });
+
+    return this.drillGridRepo.save(homeworkGrid);
   }
 
   async update(id: string, dto: Partial<CreateDrillGridDto>, userId: string): Promise<DrillGrid | null> {
     const drillGrid = await this.findOne(id, userId);
     if (!drillGrid) {
       return null;
+    }
+
+    // Для info drill-grids запрещаем редактирование (только просмотр)
+    if (drillGrid.purpose === 'info') {
+      throw new Error('Cannot update info drill-grid. It is read-only.');
+    }
+
+    // Для homework drill-grids проверяем, что редактирует владелец
+    if (drillGrid.purpose === 'homework' && drillGrid.studentUserId !== userId) {
+      throw new Error('Cannot update homework drill-grid. Access denied.');
     }
 
     Object.assign(drillGrid, dto);
