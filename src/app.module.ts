@@ -8,8 +8,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule} from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MindmapModule } from './mindmap/mindmap.module';
+import { ConstructorsModule } from './constructors/constructors.module';
 import { MindmapNode } from './mindmap/entities/node.entity';
 import { Mindmap } from './mindmap/entities/mindmap.entity';
+import { Constructor } from './constructors/entities/constructor.entity';
+import { DrillGrid } from './constructors/entities/drill-grid.entity';
+import { Flowchart } from './constructors/entities/flowchart.entity';
+import { PatternCard } from './constructors/entities/pattern-card.entity';
 import { join } from 'path';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -31,7 +36,14 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Mindmap, MindmapNode],
+      entities: [
+        Mindmap, 
+        MindmapNode,
+        Constructor,
+        DrillGrid,
+        Flowchart,
+        PatternCard
+      ],
       migrations: ['dist/migrations/*.js'],
       synchronize: false,
     }),
@@ -45,6 +57,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
       },
     }),
 
+    ConstructorsModule,
     MindmapModule,
   ],
   providers: [

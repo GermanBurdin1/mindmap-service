@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, Req, NotFoundException } from '@nestjs/common';
 import { MindmapService } from './mindmap.service';
 import { CreateNodeDto } from './dto/create-node.dto';
 
@@ -12,20 +12,35 @@ export class MindmapController {
     return this.mindmapService.create(dto, userId);
   }
 
-  @Post('bulk-save')
-  bulkSave(@Body() body: { nodes: Partial<CreateNodeDto>[] }, @Req() req: any) {
-    const userId = req.user?.sub;
-    return this.mindmapService.bulkSave(body.nodes, userId);
-  }
-
   @Get()
   findAll(@Req() req: any) {
     const userId = req.user?.sub;
     return this.mindmapService.findAll(userId);
   }
 
+  // Специфичные роуты должны быть перед параметризованными
+  @Post('bulk-save')
+  bulkSave(@Body() body: { nodes: Partial<CreateNodeDto>[] }, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.bulkSave(body.nodes, userId);
+  }
+
+  @Post('save-positions')
+  savePositions(@Body() body: { nodes: { id: string; x: number; y: number }[] }, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.savePositions(body.nodes, userId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: any) {
+    // Валидация UUID: проверяем, что id является валидным UUID
+    // Это предотвращает перехват запросов типа /mindmap/constructors
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      // Если это не UUID, значит это может быть другой путь (например, /mindmap/constructors)
+      // Возвращаем 404, чтобы NestJS мог попробовать другие роуты
+      throw new NotFoundException(`Invalid UUID format: ${id}. This route only accepts UUIDs.`);
+    }
     const userId = req.user?.sub;
     return this.mindmapService.findOne(id, userId);
   }
@@ -50,11 +65,5 @@ export class MindmapController {
     const userId = req.user?.sub;
     return this.mindmapService.delete(id, userId);
   }
-
-	@Post('save-positions')
-savePositions(@Body() body: { nodes: { id: string; x: number; y: number }[] }, @Req() req: any) {
-  const userId = req.user?.sub;
-  return this.mindmapService.savePositions(body.nodes, userId);
-}
 
 }

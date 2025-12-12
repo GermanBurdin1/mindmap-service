@@ -3,6 +3,10 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { MindmapNode } from './mindmap/entities/node.entity';
 import { Mindmap } from './mindmap/entities/mindmap.entity';
+import { Constructor } from './constructors/entities/constructor.entity';
+import { DrillGrid } from './constructors/entities/drill-grid.entity';
+import { Flowchart } from './constructors/entities/flowchart.entity';
+import { PatternCard } from './constructors/entities/pattern-card.entity';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // загружаем .env
@@ -14,7 +18,14 @@ export const AppDataSource = new DataSource({
   username: 'postgres',
   password: 'postgre',
   database: 'mindmap_db',
-  entities: [Mindmap, MindmapNode],
+  entities: [
+    Mindmap, 
+    MindmapNode,
+    Constructor,
+    DrillGrid,
+    Flowchart,
+    PatternCard
+  ],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });

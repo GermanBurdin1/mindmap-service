@@ -17,7 +17,12 @@ export class ConstructorsService {
       ...dto,
       userId,
     });
-    return this.constructorRepo.save(constructor);
+    const saved = await this.constructorRepo.save(constructor);
+    // Убеждаемся, что ID присутствует
+    if (!saved.id) {
+      throw new Error('Constructor saved but ID is missing');
+    }
+    return saved;
   }
 
   async findAll(userId: string, type?: ConstructorType): Promise<Constructor[]> {
