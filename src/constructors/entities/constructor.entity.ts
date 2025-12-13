@@ -25,6 +25,9 @@ export class Constructor {
   @Column({ type: 'int', nullable: true })
   courseId!: number | null;
 
+  @Column({ type: 'uuid', nullable: true })
+  courseLessonId!: string | null; // Связь с уроком курса (course_lessons.id)
+
   @Column({ type: 'text', nullable: true })
   description!: string | null;
 

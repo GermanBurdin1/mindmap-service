@@ -58,5 +58,12 @@ export class ConstructorsService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async findByCourseLesson(courseLessonId: string, userId: string): Promise<Constructor[]> {
+    return this.constructorRepo.find({
+      where: { courseLessonId, userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }
 
