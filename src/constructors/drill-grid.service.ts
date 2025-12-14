@@ -74,17 +74,27 @@ export class DrillGridService {
   }
 
   async findOne(id: string, userId: string): Promise<DrillGrid | null> {
-    // Проверяем права доступа через конструктор
-    const constructor = await this.constructorsService.findOne(id, userId);
-    if (!constructor) {
+    const drillGrid = await this.drillGridRepo.findOne({ where: { id }, relations: ['constructorRef'] });
+    if (!drillGrid) {
       return null;
     }
 
-    const drillGrid = await this.drillGridRepo.findOne({ where: { id }, relations: ['constructorRef'] });
-    
-    // Если это homework drill-grid, проверяем что студент имеет доступ
-    if (drillGrid && drillGrid.purpose === 'homework' && drillGrid.studentUserId !== userId) {
-      return null;
+    // Проверяем права доступа
+    if (drillGrid.purpose === 'info') {
+      // Для info drill-grids проверяем, что пользователь - владелец конструктора (преподаватель)
+      const constructor = await this.constructorsService.findOne(id, userId);
+      if (!constructor) {
+        return null;
+      }
+    } else if (drillGrid.purpose === 'homework') {
+      // Для homework drill-grids проверяем, что это либо владелец конструктора, либо студент-владелец
+      const constructor = await this.constructorsService.findOne(id, userId);
+      const isOwner = !!constructor;
+      const isStudentOwner = drillGrid.studentUserId === userId;
+      
+      if (!isOwner && !isStudentOwner) {
+        return null;
+      }
     }
 
     return drillGrid;
@@ -213,15 +223,15 @@ export class DrillGridService {
       return null;
     }
 
-    // Для info drill-grids запрещаем редактирование (только просмотр)
-    if (drillGrid.purpose === 'info') {
-      throw new Error('Cannot update info drill-grid. It is read-only.');
-    }
-
-    // Для homework drill-grids проверяем, что редактирует владелец
-    if (drillGrid.purpose === 'homework' && drillGrid.studentUserId !== userId) {
-      throw new Error('Cannot update homework drill-grid. Access denied.');
-    }
+    // Если drill-grid найден через findOne(id, userId), значит пользователь имеет доступ
+    // findOne уже проверил права доступа через конструктор для info drill-grids
+    // и через studentUserId для homework drill-grids
+    
+    // Для info drill-grids: если drill-grid найден, значит пользователь - владелец (преподаватель)
+    // Разрешаем редактирование, так как findOne уже проверил доступ через конструктор
+    
+    // Для homework drill-grids: findOne уже проверил, что это либо владелец, либо студент-владелец
+    // Дополнительная проверка не требуется, так как findOne уже отфильтровал недоступные drill-grids
 
     Object.assign(drillGrid, dto);
     return this.drillGridRepo.save(drillGrid);

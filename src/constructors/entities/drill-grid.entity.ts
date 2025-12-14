@@ -24,6 +24,7 @@ export interface DrillGridCell {
   colId: string;
   content: string;
   correctAnswer?: string;
+  isEditable?: boolean; // Можно ли редактировать эту клетку студенту
   hints?: string[];
   difficulty?: 'easy' | 'medium' | 'hard';
 }
