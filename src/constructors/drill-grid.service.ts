@@ -233,8 +233,17 @@ export class DrillGridService {
     // Для homework drill-grids: findOne уже проверил, что это либо владелец, либо студент-владелец
     // Дополнительная проверка не требуется, так как findOne уже отфильтровал недоступные drill-grids
 
-    Object.assign(drillGrid, dto);
-    return this.drillGridRepo.save(drillGrid);
+    // Никогда не позволяем перезаписать первичный ключ
+    const safeDto: any = { ...dto };
+    if ('id' in safeDto) {
+      delete safeDto.id;
+    }
+
+    // Обновляем через update(), чтобы TypeORM не трогал PK и не писал NULL
+    await this.drillGridRepo.update(id, safeDto);
+
+    // Возвращаем свежую версию из БД
+    return this.drillGridRepo.findOne({ where: { id }, relations: ['constructorRef'] });
   }
 
   async validateAnswers(id: string, answers: { rowId: string; colId: string; answer: string }[], userId: string) {

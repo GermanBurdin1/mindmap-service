@@ -38,7 +38,41 @@ export class ConstructorsService {
   }
 
   async update(id: string, dto: UpdateConstructorDto, userId: string): Promise<Constructor | null> {
-    const constructor = await this.constructorRepo.findOne({ where: { id, userId } });
+    // Сначала пробуем как владельца конструктора
+    let constructor = await this.constructorRepo.findOne({ where: { id, userId } });
+
+    // Если не найден, разрешаем студенту менять title для homework drill-grids,
+    // если он владеет соответствующей drill-grid (studentUserId = userId)
+    if (!constructor) {
+      const homeworkGrid = await this.constructorRepo.manager
+        .createQueryBuilder()
+        .select('dg')
+        .from('drill_grids', 'dg')
+        .where('dg.id = :id', { id })
+        .andWhere('dg.purpose = :purpose', { purpose: 'homework' })
+        .andWhere('dg."studentUserId" = :userId', { userId })
+        .getRawOne();
+
+      if (homeworkGrid) {
+        constructor = await this.constructorRepo.findOne({ where: { id } });
+      }
+
+      // Если конструктора нет вовсе (например, homework создан без записи в constructors),
+      // создаем минимальную запись, чтобы обновление имени работало
+      if (!constructor) {
+        const title = dto.title || 'Sans nom';
+        constructor = this.constructorRepo.create({
+          id,
+          title,
+          type: 'drill_grid' as ConstructorType,
+          userId,
+          courseId: null,
+          description: null,
+        });
+        constructor = await this.constructorRepo.save(constructor);
+      }
+    }
+
     if (!constructor) {
       return null;
     }
