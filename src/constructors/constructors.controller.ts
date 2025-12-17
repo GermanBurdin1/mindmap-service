@@ -139,6 +139,16 @@ export class ConstructorsController {
 
   // === DRILL-GRID ENDPOINTS ===
 
+  // Получить все drill-grids текущего пользователя (info + homework для него)
+  @Get('drill-grid/my')
+  async getMyDrillGrids(@Request() req: any) {
+    const userId = req.user?.sub || req.user?.id || req.user?.userId;
+    if (!userId) {
+      return { error: 'User ID not found' };
+    }
+    return this.drillGridService.findAllByUser(userId);
+  }
+
   @Post(':id/drill-grid')
   async createDrillGrid(
     @Param('id') constructorId: string,
@@ -264,3 +274,4 @@ export class ConstructorsController {
     return this.patternCardService.update(id, dto, userId);
   }
 }
+
