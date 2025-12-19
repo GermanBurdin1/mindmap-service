@@ -240,7 +240,16 @@ export class DrillGridService {
     }
 
     // Обновляем через update(), чтобы TypeORM не трогал PK и не писал NULL
-    await this.drillGridRepo.update(id, safeDto);
+    // Явно перекладываем поля, чтобы длины rows/columns перезаписывались
+    await this.drillGridRepo.update(id, {
+      rows: safeDto.rows ?? drillGrid.rows,
+      columns: safeDto.columns ?? drillGrid.columns,
+      cells: safeDto.cells ?? drillGrid.cells,
+      settings: safeDto.settings ?? drillGrid.settings ?? null,
+      purpose: safeDto.purpose ?? drillGrid.purpose ?? null,
+      studentUserId: drillGrid.studentUserId ?? null,
+      originalId: drillGrid.originalId ?? null,
+    });
 
     // Возвращаем свежую версию из БД
     return this.drillGridRepo.findOne({ where: { id }, relations: ['constructorRef'] });
