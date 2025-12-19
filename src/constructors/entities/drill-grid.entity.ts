@@ -59,6 +59,9 @@ export class DrillGrid {
   @Column({ type: 'jsonb', nullable: true })
   settings!: DrillGridSettings | null;
 
+@Column({ type: 'jsonb', nullable: true })
+tableStyle!: any | null; // Общие стили таблицы (шрифт, цвета и т.д.)
+
   @Column({ type: 'varchar', length: 20, nullable: true, default: 'info' })
   purpose!: DrillGridPurpose | null;
 

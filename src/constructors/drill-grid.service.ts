@@ -63,6 +63,7 @@ export class DrillGridService {
     const drillGrid = this.drillGridRepo.create({
       id: constructorId,
       ...dto,
+      tableStyle: dto.tableStyle || null,
       purpose,
       studentUserId,
       originalId: originalId,
@@ -246,6 +247,7 @@ export class DrillGridService {
       columns: safeDto.columns ?? drillGrid.columns,
       cells: safeDto.cells ?? drillGrid.cells,
       settings: safeDto.settings ?? drillGrid.settings ?? null,
+      tableStyle: safeDto.tableStyle ?? drillGrid.tableStyle ?? null,
       purpose: safeDto.purpose ?? drillGrid.purpose ?? null,
       studentUserId: drillGrid.studentUserId ?? null,
       originalId: drillGrid.originalId ?? null,

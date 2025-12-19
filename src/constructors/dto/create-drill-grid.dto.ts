@@ -5,6 +5,7 @@ export class CreateDrillGridDto {
   columns!: DrillGridColumn[];
   cells!: DrillGridCell[];
   settings?: DrillGridSettings | null;
+  tableStyle?: any | null;
   purpose?: DrillGridPurpose;
   studentUserId?: string | null;
   originalId?: string | null;
