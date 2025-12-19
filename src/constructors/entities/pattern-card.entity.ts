@@ -52,5 +52,8 @@ export class PatternCard {
 
   @Column({ type: 'text', nullable: true })
   explanation!: string | null; // Объяснение использования шаблона
+
+  @Column({ type: 'jsonb', nullable: true })
+  tags!: string[] | null; // Теги для категоризации и поиска
 }
 

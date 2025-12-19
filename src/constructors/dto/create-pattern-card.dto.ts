@@ -8,5 +8,6 @@ export class CreatePatternCardDto {
   difficulty?: 'beginner' | 'intermediate' | 'advanced' | null;
   category?: string | null;
   explanation?: string | null;
+  tags?: string[] | null;
 }
 
