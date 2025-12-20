@@ -102,9 +102,11 @@ export class PatternCardService {
 
     const results = answers.map((answer) => {
       const blank = patternCard.blanks.find((b) => b.id === answer.blankId);
+      const userAnswer = answer.answer?.trim() || '';
+      const correctAnswer = blank?.correctAnswer?.trim() || '';
       const isCorrect =
-        blank?.correctAnswer.toLowerCase().trim() === answer.answer.toLowerCase().trim() ||
-        blank?.alternatives?.some((alt) => alt.toLowerCase().trim() === answer.answer.toLowerCase().trim());
+        userAnswer === correctAnswer ||
+        blank?.alternatives?.some((alt) => (alt?.trim() || '') === userAnswer);
 
       return {
         blankId: answer.blankId,

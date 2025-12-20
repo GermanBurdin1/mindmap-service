@@ -4,7 +4,7 @@ export class UpdateGrammarPatternCardToChoice1772000000000 implements MigrationI
   public async up(queryRunner: QueryRunner): Promise<void> {
     const constructorId = 'e0000000-0000-0000-0000-000000000001';
 
-    // Обновляем существующую pattern-card для использования типа choice
+    // Обновляем существующую pattern-card для использования типа choice с большим количеством вариантов
     await queryRunner.query(`
       UPDATE pattern_cards
       SET 
@@ -15,12 +15,12 @@ export class UpdateGrammarPatternCardToChoice1772000000000 implements MigrationI
             "id": "blank_1",
             "position": 12,
             "correctAnswer": "le",
-            "hints": ["артикль мужского рода", "определенный артикль"],
+            "hints": ["артикль мужского рода", "определенный артикль", "существительное livre - мужского рода"],
             "alternatives": [],
             "partOfSpeech": "ARTICLE",
             "type": "choice",
-            "options": ["le", "la"],
-            "label": "Choisissez l''article"
+            "options": ["le", "la", "les", "l''", "un", "une", "des", "du", "de la"],
+            "label": "Choisissez l''article approprié"
           }
         ]'::jsonb
       WHERE id = '${constructorId}';
