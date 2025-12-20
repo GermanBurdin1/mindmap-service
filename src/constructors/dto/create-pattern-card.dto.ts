@@ -9,5 +9,6 @@ export class CreatePatternCardDto {
   category?: string | null;
   explanation?: string | null;
   tags?: string[] | null;
+  topicId?: string | null;
 }
 

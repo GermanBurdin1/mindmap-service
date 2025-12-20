@@ -7,6 +7,7 @@ import { Constructor } from './constructors/entities/constructor.entity';
 import { DrillGrid } from './constructors/entities/drill-grid.entity';
 import { Flowchart } from './constructors/entities/flowchart.entity';
 import { PatternCard } from './constructors/entities/pattern-card.entity';
+import { GrammarSectionEntity, GrammarTopic } from './constructors/entities/grammar-topic.entity';
 import * as dotenv from 'dotenv';
 
 dotenv.config(); // загружаем .env
@@ -24,7 +25,9 @@ export const AppDataSource = new DataSource({
     Constructor,
     DrillGrid,
     Flowchart,
-    PatternCard
+    PatternCard,
+    GrammarSectionEntity,
+    GrammarTopic
   ],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,

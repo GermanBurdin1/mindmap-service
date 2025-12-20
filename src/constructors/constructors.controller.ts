@@ -3,6 +3,7 @@ import { ConstructorsService } from './constructors.service';
 import { DrillGridService } from './drill-grid.service';
 import { FlowchartService } from './flowchart.service';
 import { PatternCardService } from './pattern-card.service';
+import { GrammarTopicService } from './grammar-topic.service';
 import { CreateConstructorDto } from './dto/create-constructor.dto';
 import { CreateDrillGridDto } from './dto/create-drill-grid.dto';
 import { CreateFlowchartDto } from './dto/create-flowchart.dto';
@@ -18,6 +19,7 @@ export class ConstructorsController {
     private readonly drillGridService: DrillGridService,
     private readonly flowchartService: FlowchartService,
     private readonly patternCardService: PatternCardService,
+    private readonly grammarTopicService: GrammarTopicService,
   ) {}
 
   // Создать конструктор
@@ -86,6 +88,37 @@ export class ConstructorsController {
       body.studentUserId,
       body.constructorId
     );
+  }
+
+  // === GRAMMAR TOPICS ENDPOINTS (должны быть перед @Get(':id')) ===
+
+  @Get('grammar/sections')
+  async getGrammarSections(@Request() req: any) {
+    return this.grammarTopicService.findAllSections();
+  }
+
+  @Get('grammar/sections/:sectionId/topics')
+  async getGrammarTopics(
+    @Param('sectionId') sectionId: string,
+    @Request() req: any
+  ) {
+    return this.grammarTopicService.findAllTopics(sectionId);
+  }
+
+  @Get('grammar/topics/:topicId')
+  async getGrammarTopic(
+    @Param('topicId') topicId: string,
+    @Request() req: any
+  ) {
+    return this.grammarTopicService.findTopicById(topicId);
+  }
+
+  @Get('grammar/topics/:topicId/tree')
+  async getGrammarTopicTree(
+    @Param('topicId') topicId: string,
+    @Request() req: any
+  ) {
+    return this.grammarTopicService.findTopicTree(topicId);
   }
 
   // Получить конструктор по ID (должен быть после всех специфичных маршрутов)

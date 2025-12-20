@@ -3,9 +3,11 @@ import {
   PrimaryColumn,
   Column,
   OneToOne,
+  ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { Constructor } from './constructor.entity';
+import { GrammarTopic } from './grammar-topic.entity';
 
 export interface PatternBlank {
   id: string;
@@ -14,6 +16,9 @@ export interface PatternBlank {
   hints?: string[];
   alternatives?: string[]; // Альтернативные правильные ответы
   partOfSpeech?: string; // Часть речи (VERB, NOUN, ADJ и т.д.)
+  type?: 'text' | 'choice'; // Тип задания: текстовый ввод или выбор из вариантов
+  options?: string[]; // Варианты для выбора (используется при type === 'choice')
+  label?: string; // Подпись для blank (например, "Выберите артикль")
 }
 
 export interface PatternVariation {
@@ -55,5 +60,12 @@ export class PatternCard {
 
   @Column({ type: 'jsonb', nullable: true })
   tags!: string[] | null; // Теги для категоризации и поиска
+
+  @Column({ type: 'uuid', nullable: true })
+  topicId!: string | null;
+
+  @ManyToOne(() => GrammarTopic, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'topicId' })
+  topic!: GrammarTopic | null;
 }
 

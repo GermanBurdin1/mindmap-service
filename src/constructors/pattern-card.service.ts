@@ -41,7 +41,17 @@ export class PatternCardService {
       return null;
     }
 
-    Object.assign(patternCard, dto);
+    // Обновляем только переданные поля
+    if (dto.pattern !== undefined) patternCard.pattern = dto.pattern;
+    if (dto.example !== undefined) patternCard.example = dto.example;
+    if (dto.blanks !== undefined) patternCard.blanks = dto.blanks;
+    if (dto.variations !== undefined) patternCard.variations = dto.variations;
+    if (dto.difficulty !== undefined) patternCard.difficulty = dto.difficulty;
+    if (dto.category !== undefined) patternCard.category = dto.category;
+    if (dto.explanation !== undefined) patternCard.explanation = dto.explanation;
+    if (dto.tags !== undefined) patternCard.tags = dto.tags;
+    if (dto.topicId !== undefined) patternCard.topicId = dto.topicId;
+
     return this.patternCardRepo.save(patternCard);
   }
 
