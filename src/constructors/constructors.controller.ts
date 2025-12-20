@@ -252,6 +252,33 @@ export class ConstructorsController {
     return this.patternCardService.create(constructorId, dto, userId);
   }
 
+  // Специфичные роуты должны быть ПЕРЕД общим @Get(':id/pattern-card')
+  @Get(':id/pattern-card/stages/:stage')
+  async getPatternCardStage(
+    @Param('id') id: string,
+    @Param('stage') stage: 'example' | 'blanks' | 'spontaneous',
+    @Request() req: any
+  ) {
+    const userId = req.user?.sub || req.user?.id || req.user?.userId;
+    if (!userId) {
+      return { error: 'User ID not found' };
+    }
+    return this.patternCardService.getStage(id, stage, userId);
+  }
+
+  @Post(':id/pattern-card/fill')
+  async fillPatternCard(
+    @Param('id') id: string,
+    @Body() body: { answers: { blankId: string; answer: string }[] },
+    @Request() req: any
+  ) {
+    const userId = req.user?.sub || req.user?.id || req.user?.userId;
+    if (!userId) {
+      return { error: 'User ID not found' };
+    }
+    return this.patternCardService.fillPattern(id, body.answers, userId);
+  }
+
   @Get(':id/pattern-card')
   async getPatternCard(@Param('id') id: string, @Request() req: any) {
     const userId = req.user?.sub || req.user?.id || req.user?.userId;
@@ -274,4 +301,3 @@ export class ConstructorsController {
     return this.patternCardService.update(id, dto, userId);
   }
 }
-
