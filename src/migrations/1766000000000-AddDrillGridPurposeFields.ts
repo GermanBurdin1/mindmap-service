@@ -82,3 +82,7 @@ export class AddDrillGridPurposeFields1766000000000 implements MigrationInterfac
     await queryRunner.dropColumn('drill_grids', 'purpose');
   }
 }
+
+
+
+

@@ -16,3 +16,7 @@ export class AddTagsToPatternCards1768000000000 implements MigrationInterface {
     await queryRunner.dropColumn('pattern_cards', 'tags');
   }
 }
+
+
+
+

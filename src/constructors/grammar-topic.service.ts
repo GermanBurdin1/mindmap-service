@@ -77,4 +77,32 @@ export class GrammarTopicService {
     });
     return this.topicRepo.save(topic);
   }
+
+  /**
+   * Проверяет, относится ли тема к артиклям (рекурсивно проверяя родительские темы)
+   */
+  async isArticleTopic(topicId: string | null | undefined): Promise<boolean> {
+    if (!topicId) return false;
+
+    const topic = await this.findTopicById(topicId);
+    if (!topic) return false;
+
+    // Проверяем текущую тему
+    const title = topic.title?.toLowerCase() || '';
+    if (title.includes('article') || title.includes('артикль')) {
+      return true;
+    }
+
+    // Рекурсивно проверяем родительские темы
+    if (topic.parentTopicId) {
+      return this.isArticleTopic(topic.parentTopicId);
+    }
+
+    return false;
+  }
 }
+
+
+
+
+

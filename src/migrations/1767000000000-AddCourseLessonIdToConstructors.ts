@@ -26,3 +26,7 @@ export class AddCourseLessonIdToConstructors1767000000000 implements MigrationIn
   }
 }
 
+
+
+
+

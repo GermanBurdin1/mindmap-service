@@ -181,3 +181,7 @@ export class InsertSamplePatternCards1769000000000 implements MigrationInterface
     `);
   }
 }
+
+
+
+

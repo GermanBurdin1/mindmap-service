@@ -75,3 +75,7 @@ export class InsertGrammarPatternCard1771000000000 implements MigrationInterface
     `);
   }
 }
+
+
+
+

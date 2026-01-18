@@ -22,6 +22,7 @@ export class PatternCardService {
     const patternCard = this.patternCardRepo.create({
       id: constructorId,
       ...dto,
+      visibility: dto.visibility || 'public',
     });
     return this.patternCardRepo.save(patternCard);
   }
@@ -51,6 +52,7 @@ export class PatternCardService {
     if (dto.explanation !== undefined) patternCard.explanation = dto.explanation;
     if (dto.tags !== undefined) patternCard.tags = dto.tags;
     if (dto.topicId !== undefined) patternCard.topicId = dto.topicId;
+    if (dto.visibility !== undefined) patternCard.visibility = dto.visibility;
 
     return this.patternCardRepo.save(patternCard);
   }
@@ -136,5 +138,87 @@ export class PatternCardService {
     });
     return filled;
   }
+
+  // Получить публичные карточки (доступны всем)
+  async findPublicCards(currentUserId?: string): Promise<PatternCard[]> {
+    const queryBuilder = this.patternCardRepo
+      .createQueryBuilder('pc')
+      .innerJoin('constructors', 'c', 'c.id = pc.id')
+      .where('pc.visibility = :visibility', { visibility: 'public' })
+      .select([
+        'pc.id',
+        'pc.pattern',
+        'pc.example',
+        'pc.blanks',
+        'pc.variations',
+        'pc.difficulty',
+        'pc.category',
+        'pc.explanation',
+        'pc.tags',
+        'pc.topicId',
+        'pc.visibility',
+        'c.title',
+        'c.userId',
+      ]);
+
+    const results = await queryBuilder.getRawMany();
+    return results.map((row) => ({
+      id: row.pc_id,
+      pattern: row.pc_pattern,
+      example: row.pc_example,
+      blanks: row.pc_blanks,
+      variations: row.pc_variations,
+      difficulty: row.pc_difficulty,
+      category: row.pc_category,
+      explanation: row.pc_explanation,
+      tags: row.pc_tags,
+      topicId: row.pc_topicId,
+      visibility: row.pc_visibility,
+      constructorTitle: row.c_title,
+      constructorUserId: row.c_userId,
+    })) as any;
+  }
+
+  // Получить карточки для студентов (public + students)
+  async findCardsForStudents(currentUserId?: string): Promise<PatternCard[]> {
+    const queryBuilder = this.patternCardRepo
+      .createQueryBuilder('pc')
+      .innerJoin('constructors', 'c', 'c.id = pc.id')
+      .where('pc.visibility IN (:...visibilities)', { visibilities: ['public', 'students'] })
+      .select([
+        'pc.id',
+        'pc.pattern',
+        'pc.example',
+        'pc.blanks',
+        'pc.variations',
+        'pc.difficulty',
+        'pc.category',
+        'pc.explanation',
+        'pc.tags',
+        'pc.topicId',
+        'pc.visibility',
+        'c.title',
+        'c.userId',
+      ]);
+
+    const results = await queryBuilder.getRawMany();
+    return results.map((row) => ({
+      id: row.pc_id,
+      pattern: row.pc_pattern,
+      example: row.pc_example,
+      blanks: row.pc_blanks,
+      variations: row.pc_variations,
+      difficulty: row.pc_difficulty,
+      category: row.pc_category,
+      explanation: row.pc_explanation,
+      tags: row.pc_tags,
+      topicId: row.pc_topicId,
+      visibility: row.pc_visibility,
+      constructorTitle: row.c_title,
+      constructorUserId: row.c_userId,
+    })) as any;
+  }
 }
+
+
 

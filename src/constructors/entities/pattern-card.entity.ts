@@ -67,5 +67,10 @@ export class PatternCard {
   @ManyToOne(() => GrammarTopic, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'topicId' })
   topic!: GrammarTopic | null;
+
+  @Column({ type: 'varchar', default: 'public' })
+  visibility!: 'public' | 'students' | 'private'; // Видимость карточки: public - всем, students - только ученикам, private - никому
 }
+
+
 

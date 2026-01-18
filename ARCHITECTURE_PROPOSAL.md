@@ -182,3 +182,7 @@ services/
 2. Мигрировать данные из `mindmap` в `constructors`
 3. Создать связи между `mindmap` и `constructors` (или интегрировать)
 
+
+
+
+

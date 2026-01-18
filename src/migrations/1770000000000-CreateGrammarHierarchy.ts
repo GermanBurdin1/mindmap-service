@@ -250,3 +250,7 @@ export class CreateGrammarHierarchy1770000000000 implements MigrationInterface {
     await queryRunner.dropTable('grammar_sections', true);
   }
 }
+
+
+
+

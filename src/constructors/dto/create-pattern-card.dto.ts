@@ -10,5 +10,10 @@ export class CreatePatternCardDto {
   explanation?: string | null;
   tags?: string[] | null;
   topicId?: string | null;
+  visibility?: 'public' | 'students' | 'private';
 }
+
+
+
+
 
