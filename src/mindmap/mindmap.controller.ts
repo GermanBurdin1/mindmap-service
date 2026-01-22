@@ -1,10 +1,17 @@
 import { Controller, Get, Post, Body, Param, Delete, Patch, Req, NotFoundException } from '@nestjs/common';
 import { MindmapService } from './mindmap.service';
 import { CreateNodeDto } from './dto/create-node.dto';
+import { CreateMindMapDto } from './dto/create-mindmap.dto';
 
 @Controller('mindmap')
 export class MindmapController {
   constructor(private readonly mindmapService: MindmapService) {}
+
+  @Post()
+  createMindMap(@Body() dto: CreateMindMapDto, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.createMindMap(dto, userId);
+  }
 
   @Post()
   create(@Body() dto: CreateNodeDto, @Req() req: any) {
