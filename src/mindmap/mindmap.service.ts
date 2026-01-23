@@ -80,4 +80,47 @@ export class MindmapService {
 		return { message: 'Позиции обновлены' };
 	}
 
+	findAllMindmaps(userId: string) {
+  return this.mindmapRepo.find({
+    where: { userId },
+    order: { createdAt: 'DESC' },
+  });
+}
+
+async findNodesByMindmapId(mindmapId: string, userId: string) {
+  // 1️⃣ Проверяем, что mindmap существует и принадлежит пользователю
+  const mindmap = await this.mindmapRepo.findOne({
+    where: { id: mindmapId, userId },
+  });
+
+  if (!mindmap) {
+    throw new Error('Mindmap not found or access denied');
+  }
+
+  // 2️⃣ Загружаем nodes этой mindmap
+  return this.nodeRepo.find({
+    where: { mindmapId, userId }
+  });
+}
+
+async createNode(dto: CreateNodeDto, userId: string) {
+  // 1️⃣ Проверяем, что mindmap существует и принадлежит пользователю
+  const mindmap = await this.mindmapRepo.findOne({
+    where: { id: dto.mindmapId, userId },
+  });
+
+  if (!mindmap) {
+    throw new Error('Mindmap not found or access denied');
+  }
+
+  // 2️⃣ Создаём node
+  const node = this.nodeRepo.create({
+    ...dto,
+    userId,
+  });
+
+  return this.nodeRepo.save(node);
+}
+
+
 }

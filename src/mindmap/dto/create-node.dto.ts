@@ -1,4 +1,5 @@
 export class CreateNodeDto {
+	mindmapId?: string;
   id!: string;
   title!: string;
   parentId!: string | null;

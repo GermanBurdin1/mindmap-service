@@ -7,22 +7,32 @@ import { CreateMindMapDto } from './dto/create-mindmap.dto';
 export class MindmapController {
   constructor(private readonly mindmapService: MindmapService) {}
 
+  // 1) Создать mindmap
   @Post()
   createMindMap(@Body() dto: CreateMindMapDto, @Req() req: any) {
     const userId = req.user?.sub;
     return this.mindmapService.createMindMap(dto, userId);
   }
 
-  @Post()
-  create(@Body() dto: CreateNodeDto, @Req() req: any) {
+  // 2) Создать node (отдельный путь!)
+  @Post('nodes')
+  createNode(@Body() dto: CreateNodeDto, @Req() req: any) {
     const userId = req.user?.sub;
-    return this.mindmapService.create(dto, userId);
+    return this.mindmapService.createNode(dto, userId);
   }
 
+  // 3) Получить все mindmaps (если нужно)
   @Get()
-  findAll(@Req() req: any) {
+  findAllMindmaps(@Req() req: any) {
     const userId = req.user?.sub;
-    return this.mindmapService.findAll(userId);
+    return this.mindmapService.findAllMindmaps(userId);
+  }
+
+  // 5) ✅ Новый endpoint: получить узлы по mindmapId
+  @Get(':id/nodes')
+  findNodes(@Param('id') mindmapId: string, @Req() req: any) {
+    const userId = req.user?.sub;
+    return this.mindmapService.findNodesByMindmapId(mindmapId, userId);
   }
 
   // Специфичные роуты должны быть перед параметризованными
